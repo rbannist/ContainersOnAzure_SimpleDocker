@@ -9,9 +9,8 @@ This has been completed in advance.  Access your 'Docker' VM using Guacamole.
 sudo docker run hello-world
 ```
 <br>
-Note the "Unable to find image 'hello-world:latest' locally" + "Pulling".
+Note the "Unable to find image 'hello-world:latest' locally" and the subsequent "Pulling" message.
 <br><br>
-
 ## Step 3 - Pull down an image from Docker Hub before running a container:
 ```
 sudo docker pull ubuntu:latest
@@ -67,11 +66,14 @@ Edit the html file in any way you see fit
 <br>
 'Ctrl+o', 'Ctrl+x' to save and exit nano
 <br>
+
+Start nginx:
 ```
 /etc/init.d/nginx start
 ```
 <br>
-On 'Mgmt VM' (Windows), browse to:
+
+On your 'Mgmt VM' (Windows), browse to:
 
 ```
 http://<dockervmipadress>
@@ -79,7 +81,7 @@ http://<dockervmipadress>
 
 You should see an Nginx welcome page with your edits.
 <br><br>
-## Step 7 - Build a new image based on the addition of an additional layer atop the original image that was added in Step 6:
+## Step 7 - Build a new image based on the addition of a new layer that was added in Step 6 atop the original 'Ubuntu' image:
 
 Back on the 'Docker VM':
 
@@ -92,7 +94,7 @@ Create a new image based on the ubuntu image + the changes made:
 sudo docker commit <idofcontainerlistedinthelastoutput> <yourfirstname>/nginx
 ```
 
-Remove the container just run now that an image has been created based on it:
+Remove the container that we used to build a new image:
 ```
 sudo docker rm <idofcontainerlistedinthelastoutput>
 ```
@@ -102,9 +104,9 @@ Run a new container based on the image created above and start the nginx service
 ```
 sudo docker run -d -p 80:80 --net=host <yourfirstname>/nginx nginx -g 'daemon off;'
 ```
-
+<br>
 See the '-d' switch which runs the container in the background (i.e. you'll remain at the prompt provided by your 'Docker VM' after seeing an ID printed to screen which is the new container's ID).
-
+<br><br>
 On 'Mgmt VM', browse to:
 
 ```
@@ -114,7 +116,7 @@ http://<dockervmipadress>
 You should see the page that you edited again.
 
 Note. The new image is currently only stored locally as it's not been pushed to a registry such as Docker Hub or Azure Container Registry.  This would mean a lack of 'portability'.
-
+<br><br>
 Clear up:
 ```
 sudo docker ps
@@ -177,17 +179,27 @@ EXPOSE 80
 
 <br><br>
 
-Run a build using the Dockerfile just created:
+Perform a build using the Dockerfile just created:
 
 ```
 sudo docker build -t <yourfirstname>/nginx2 .
 ```
-
+<br><br>
 Run a container using the new image:
 
 ```
 sudo docker run -d -p 80:80 --net=host <yourfirstname>/nginx2
 ```
 
+<br>
+Test on 'Mgmt VM' by browsing to:
+
+```
+http://<dockervmipadress>
+```
+
+
+<br><br>
 ## Step 10 - Declaratively template a multi-container template using Docker Compose
 
+Richard to demonstrate.
