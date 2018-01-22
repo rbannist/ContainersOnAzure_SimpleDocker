@@ -12,7 +12,7 @@ sudo docker run hello-world
 Note the "Unable to find image 'hello-world:latest' locally" + "Pulling".
 <br><br>
 
-## Step 3 - Pull down an image fro Docker Hub before running a container:
+## Step 3 - Pull down an image from Docker Hub before running a container:
 ```
 sudo docker pull ubuntu:latest
 ```
@@ -28,8 +28,8 @@ exit
 ```
 or
 <br>
-'Ctrl + C'
-<br>
+'Ctrl+d'
+<br><br>
 ```
 sudo docker ps -a
 ```
@@ -43,8 +43,9 @@ On your 'Docker VM':
 ```
 ifconfig -a
 ```
-Note down the IP address on 'Eth0'.
 
+Note down the IP address on 'Eth0'.
+<br><br>
 ```
 sudo docker run -it -p 80:80 --net=host ubuntu /bin/bash
 ```
@@ -70,15 +71,16 @@ Edit the html file in any way you see fit
 /etc/init.d/nginx start
 ```
 <br>
-On 'Mgmt VM' (Windows):
-Browse to http://<dockervmeth0ipadress>
+On 'Mgmt VM' (Windows), browse to:
+```
+http://<dockervmipadress>
+```
 
 You should see an Nginx welcome page with your edits.
 <br><br>
-## Step 7 - Build a new image based on the addition of an additional layer atop the original image which was added in Step 6:
+## Step 7 - Build a new image based on the addition of an additional layer atop the original image that was added in Step 6:
 
 Back on the 'Docker VM':
-'Ctrl-D' to exit the container
 
 ```
 sudo docker ps -a
@@ -89,7 +91,7 @@ Create a new image based on the ubuntu image + the changes made:
 sudo docker commit <idofcontainerlistedinthelastoutput> <yourfirstname>/nginx
 ```
 
-Remove the container just run now that we've created an image based on it:
+Remove the container just run now that an image has been created based on it:
 ```
 sudo docker rm <idofcontainerlistedinthelastoutput>
 ```
@@ -100,12 +102,14 @@ Run a new container based on the image created above and start the nginx service
 sudo docker run -d -p 80:80 --net=host <yourfirstname>/nginx nginx -g 'daemon off;'
 ```
 
-Note the -d switch which runs the container in the background (i.e. you'll remain at the prompt provided by your 'Docker VM' after seeing an ID printed to screen which is the new container's ID).
+See the '-d' switch which runs the container in the background (i.e. you'll remain at the prompt provided by your 'Docker VM' after seeing an ID printed to screen which is the new container's ID).
 
-On 'Mgmt VM':
-Browse to http://<dockervmeth0ipadress>
+On 'Mgmt VM', browse to:
+```
+http://<dockervmipadress>
+```
 
-You should see the page that you edited.
+You should see the page that you edited again.
 
 Note. The new image is currently only stored locally as it's not been pushed to a registry such as Docker Hub or Azure Container Registry.  This would mean a lack of 'portability'.
 
@@ -113,12 +117,15 @@ Clear up:
 ```
 sudo docker ps
 ```
+
 ```
 sudo docker stop <idofcontainerlistedinthelastoutput>
 ```
+
 ```
 sudo docker rm <idofcontainerlistedinthelastoutput>
 ```
+
 <br><br>
 
 ## Step 8 - Inspect the layers of our image:
@@ -127,9 +134,15 @@ sudo docker rm <idofcontainerlistedinthelastoutput>
 sudo docker history <yourfirstname>/nginx
 ```
 
+See the /bin/bash layer at the top that's added ~96.5MB.
 
 
-<i>Declaratively template</i> the process above using a 'Dockerfile'
+## Step 9 - <i>Declaratively template</i> the process that we've just run through using a 'Dockerfile':
+
+
+
+
+
 
 Run a container based on the newly created image (currently only stored locally)
 
