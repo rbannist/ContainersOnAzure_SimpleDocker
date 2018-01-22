@@ -72,6 +72,7 @@ Edit the html file in any way you see fit
 ```
 <br>
 On 'Mgmt VM' (Windows), browse to:
+
 ```
 http://<dockervmipadress>
 ```
@@ -105,6 +106,7 @@ sudo docker run -d -p 80:80 --net=host <yourfirstname>/nginx nginx -g 'daemon of
 See the '-d' switch which runs the container in the background (i.e. you'll remain at the prompt provided by your 'Docker VM' after seeing an ID printed to screen which is the new container's ID).
 
 On 'Mgmt VM', browse to:
+
 ```
 http://<dockervmipadress>
 ```
@@ -136,17 +138,56 @@ sudo docker history <yourfirstname>/nginx
 
 See the /bin/bash layer at the top that's added ~96.5MB.
 
-
+<br><br>
 ## Step 9 - <i>Declaratively template</i> the process that we've just run through using a 'Dockerfile':
 
+On your 'Docker VM':
 
+```
+sudo mkdir nginxdockerfile
+```
 
+```
+cd nginxdockerfile
+```
 
+```
+sudo nano Dockerfile
+```
 
+Type in:
 
-Run a container based on the newly created image (currently only stored locally)
+```
 
-Declaratively template a multi-container template using Docker Compose
+FROM ubuntu 
 
-Run an environment based on the template
+RUN apt-get update
+
+RUN apt-get install -y nginx
+
+RUN echo "\ndaemon off;" >> /etc/nginx/nginx.conf
+
+CMD ["nginx"]
+
+EXPOSE 80
+
+```
+
+'Ctrl+o', 'Ctrl+x' to save and exit.
+
+<br><br>
+
+Run a build using the Dockerfile just created:
+
+```
+sudo docker build -t <yourfirstname>/nginx2 .
+```
+
+Run a container using the new image:
+
+```
+sudo docker run -d -p 80:80 --net=host <yourfirstname>/nginx2
+```
+
+## Step 10 - Declaratively template a multi-container template using Docker Compose
 
