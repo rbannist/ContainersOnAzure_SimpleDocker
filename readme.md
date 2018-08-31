@@ -4,7 +4,7 @@
 
 ## Step 1 - Get access to a Docker host.
 
-This has been completed in advance of today's session using the Docker Machine tool.  You can access your Docker VM by entering 'docker' commands as you normally would on a cmd terminal when the engine is installed-and-running locally.
+This has been completed in advance of today's session using the Docker Machine tool.  You can access your Docker VM by entering 'docker' commands as you normally would in a terminal when the engine is installed-and-running locally.
 
 FYI:
 <br>
@@ -28,7 +28,7 @@ Copy the machine name from the output and then...
 docker-machine ip <dockermachinename>
 ```
 
-We'll need that later.
+You'll need that IP address later.
 
 <br><br>
 
@@ -105,7 +105,7 @@ docker ps -a
 
 <br>
 
-Notice the 'COMMAND' that was run.
+Notice under 'COMMAND' the command that was run.
 
 <br>
 
@@ -121,7 +121,7 @@ docker ps
 
 <br>
 
-Let's avoid being fancy for now.  We'll start with a base OS image:
+Let's avoid doing anything fancy for now.  We'll start with a base OS image:
 
 ```
 docker pull ubuntu:latest
@@ -135,7 +135,7 @@ Docker images are particularly interesting.  They're not like virtual machine im
 docker history ubuntu
 ```
 
-When you run a container, it writes to a {thin} writable layer at the top and all of the layers below are readable layers.  We will work with a 'Dockerfile' later but that's one way that layers are added.   A Dockerfile is a top-down list of instructions and each line in the file basically adds a layer.
+When you run a container, it writes to a {thin} writable layer at the top and all of the layers below are readable layers.  We will work with a 'Dockerfile' in the last step but that's one way that layers are added.   A Dockerfile is a top-down list of instructions and each line that causes a change adds a layer.
 
 More on images, containers, and storage drivers can be found here: https://docs.docker.com/v17.09/engine/userguide/storagedriver/imagesandcontainers/ 
 
@@ -153,7 +153,7 @@ If you've been on a Linux OS before, things will be pretty familiar.  Enter a fe
 
 <br>
 
-Let's now take a look at how the container is connected to the network because this is important to understand; especially when considering how to scale beyond a single Docker host and also when looking at Kubernetes Services and Service Discovery.
+Let's now take a look at how the container is connected to the network because this is important to understand; especially when considering how to scale beyond a single Docker host and also when looking at Kubernetes Services and Service Discovery later today.
 
 Enter the following commands:
 
@@ -197,6 +197,8 @@ To execute a command on your Docker Host, enter the following to connect to it o
 docker-machine ssh <machinename>
 ```
 
+<br>
+
 Now look at the Docker Host's network interfaces:
 
 ```
@@ -205,8 +207,9 @@ ifconfig -a
 
 "docker0" is the local virtual bridge.  "eth0" is the Docker Host's real interface.
 
+<br>
 
-Disconnect the SSH session ("exit") and we'll do a quick clean-up to finish 'Step 3'.
+Disconnect the SSH session ("exit") and do a quick clean-up to finish 'Step 3'.
 
 <br>
 
@@ -224,11 +227,11 @@ docker rm <containerid>
 
 Tip.  You may need to right-click the cmd terminal window for 'Edit --> Paste' during this step.
 
-Note. You will very likely not build any 'dotnetcore' image like we're going to as Microsoft maintains images.  See: https://hub.docker.com/r/microsoft/dotnet/ for information.  The image that we're about to build also ends up being too large to be used in any practical sense (i.e. pushed and pulled to-and-from an image registry/repository).
+Note. You would not build a 'dotnetcore' image like we're going to as Microsoft maintains images and it doesn't make sense to have the sdk in every image if the app has already been built/code has been compiled.  See: https://hub.docker.com/r/microsoft/dotnet/ for information.  The image that we're about to build also ends up being very large (i.e. lots of data to push and pull to-and-from an image registry/repository - not very efficient).
 
 <br>
 
-The first thing to do in this step is start a new container atop the Ubuntu image:
+The first thing to do in this step is to start a new container atop the Ubuntu image:
 
 ```
 docker run -it -p 80:5000 ubuntu:latest
@@ -238,7 +241,7 @@ You may have noticed a subtle change in the command above.  We now have "-p 80:5
 
 <br>
 
-Once the container is running and you're attached to it, the following commands need adding to setup install dotnetcore sdk dependencies and install the dotnetcoresdk:
+Once the container is running and you're attached to it, the following commands need entering to install dotnetcore sdk dependencies and then to install the dotnetcore sdk:
 
 ```
 apt-get update && apt-get install -y --no-install-recommends ca-certificates curl wget nano && rm -rf /var/lib/apt/lists/*
@@ -260,15 +263,12 @@ curl -SL https://dotnetcli.blob.core.windows.net/dotnet/Sdk/2.1.301/dotnet-sdk-2
 DOTNET_RUNNING_IN_CONTAINER=true
 DOTNET_USE_POLLING_FILE_WATCHER=true
 NUGET_XMLDOC_MODE=skip
-```
-
-```
 mkdir warmup && cd warmup && dotnet new && cd .. && rm -rf warmup && rm -rf /tmp/NuGetScratch
 ```
 
 <br>
 
-The dotnetcore sdk is now installed within the container so we can now create a basic Razor Pages web app:
+The dotnetcore sdk is now installed within the container so you can now create a basic Razor Pages web app:
 
 ```
 dotnet new webApp -o mockapp1
@@ -276,18 +276,18 @@ dotnet new webApp -o mockapp1
 
 <br>
 
-Before running 'dotnet run' to host our basic app on a local IIS Express web server, we need to change a setting in order to allow access from outside the local machine.  Start by entering the following:
+Before running 'dotnet run' to host your basic app on a local Kestrel server, a setting needs changing in order to allow access from outside the local machine.  Start by entering the following:
 
 ```
 cd mockapp1/Properties/
 nano launchSettings.json
 ```
 
-Then change the "applicationUrl": "https://localhost:5001;http://localhost:5000" text to  "applicationUrl": "http://0.0.0.0:5000" and enter Ctrl+O followed by Ctrl+X to save the file and exit nano.
+Then change the "applicationUrl": "https://localhost:5001;http://localhost:5000" text to  "applicationUrl": "http://0.0.0.0:5000" and enter Ctrl+o followed by Ctrl+x to save the file and exit nano.
 
 <br>
 
-The dotnet run command can now be entered to run and test the application:
+The 'dotnet run' command can now be entered to run and test access to the application:
 
 ```
 cd ..
@@ -296,27 +296,29 @@ dotnet run
 
 <br>
 
-Grab the Docker Host Public IP address that you copied earlier and use a web browser to hit it over http.
+Grab the Docker Host's Public IP Address that you copied earlier and use a web browser to hit it over http.
 
 You should see a basic Razor Pages Web App.
 
-You should also see some logs in your cmd terminal when you return to it.
+You should also see some logs on your cmd terminal when you return to it.
 
-Now, exit the container by entering Ctrl+C folllowed by "exit".  In the next step you will convert the stopped container into an image which will mean that your application and all of its dependencies are in one compact, portable, and redeployable package... i.e. we'll start to see the real value of Docker!
+Now, exit the container by entering Ctrl+c folllowed by "exit".  In the next step you will convert the stopped container into an image which will mean that your application and all of its dependencies will be in one compact, portable, and redeployable package... i.e. you'll start to see the real value of Docker!
 
 Do not remove the container that has just exited.
 
 <br><br>
 
-## Step 5 - Build a new image based on the addition of a new layer that was added in Step 6 atop the original 'Ubuntu' image.
+## Step 5 - Build a new image based on the addition of a new layer that was added in the last step atop the original 'Ubuntu' image.
 
 <br>
 
-The container that you were just working with is stopped.  The changes that you made were all written to a top {thin} writeable layer and as you haven't removed the container yet the layer is still stored locally.  You're now going to 'commit' the container/layer - which includes your new application and its dependencies - to a new image.  Start by copying the ID of the stopped container from the output of:
+The container that you were just working with is stopped.  The changes that you made were all written to a thin writeable layer and, as you haven't removed the container yet, the layer is still stored locally.  You're now going to 'commit' the container/layer - which includes your new application and its dependencies - to a new image.  Start by copying the ID of the stopped container from the output of:
 
 ```
 docker ps -a
 ```
+
+<br>
 
 Now commit to an image called 'localrepo/mockapp1':
 
@@ -342,7 +344,7 @@ We'll keep things local for now though.  Run a container atop your new image usi
 docker run -d -p 80:5000 localrepo/mockapp1:latest dotnet run --project /mockapp1
 ```
 
-Notes. The '-d' switch runs the container in the background.  We're also executing the 'dotnet run --project /mockapp1' when the container starts because we didn't script it within the container that we worked on.
+Notes. The '-d' switch runs the container in the background (hint. Kubernetes will run all containers with this switch).  We're also executing the 'dotnet run --project /mockapp1' when the container starts because we didn't setup a startup script within the container that we worked on.
 
 <br>
 
@@ -366,7 +368,7 @@ docker logs <containerid>
 
 <br>
 
-It's also worth checking out 'docker exec' as well:
+It's also worth checking out 'docker exec':
 
 ```
 docker exec <containerid> ps -ef
@@ -374,13 +376,13 @@ docker exec <containerid> ps -ef
 
 <br><br>
 
-## Step 6 - <i>Template</i> an image build using a 'Dockerfile', create an Azure Container Registry, and push the new image up to it:
+## Step 6 - Template an image build using a 'Dockerfile', create an Azure Container Registry, and push the new image up to it.
 
 <br>
 
 Open Visual Studio Code and create a new file.
 
-Paste the following text into the file and save it with a name of 'Dockerfile' in the folder called 'nginx' under 'C:\Docker\'.
+Paste the following text into the file, have a look over what the lines imply will happen at each step of the build, and then save the file with a name of 'Dockerfile' in a folder called 'nginx' under 'C:\Docker\'.
 
 ```
 FROM ubuntu
@@ -398,14 +400,50 @@ EXPOSE 80
 
 <br>
 
-Create a new Azure Container Registry.
+Create a new Azure Container Registry.  This can be done using Azure CLI.
+
+Go to your open cmd terminal and login to Azure:
+
+```
+az login
+```
+
+A web browser tab will open and after you authenticate you should see a print of some json that describes the subscriptions that you have access to.  Select the correct Subscription (i.e. 'Development'):
+
+```
+az account set --subscription <subscriptionid>
+```
 
 <br>
 
-Navigate to the location of the new file in your cmd terminal and perform an image build using the Dockerfile just created by entering:
+Create a new Azure Container Registry:
 
 ```
-docker build -t <acrname>/nginx .
+az acr create --resource-group <resourcegroupname> --name <containerregistryname> --sku Basic
+```
+
+Note. 'resourcegroupname' = sd-we-con-dev-rg'LabID'  and  'containerregistryname' = sdwecondevacr'LabID'
+
+<br>
+
+Now, login to your Azure Container Registry by first getting your credentials:
+
+```
+az acr credential show --name <containerregistryname>
+```
+
+Followed by logging with Docker:
+
+```
+docker login <containerregistryname>.azurecr.io --username <containerregistryname> --password <eitherpasswordshowninlastoutput>
+```
+
+<br>
+
+Navigate to the location of the Dockerfile file in your cmd terminal and perform an image build using the Dockerfile just created by entering:
+
+```
+docker build -t <containerregistryname>.azurecr.io/nginx .
 ```
 
 <br>
@@ -413,18 +451,76 @@ docker build -t <acrname>/nginx .
 Run a container using the new image:
 
 ```
-docker run -d -p 80:80 <acrname>/nginx
+docker run -d -p 80:80 <containerregistryname>.azurecr.io/nginx
 ```
 
 <br>
 
 Test by browsing to your Docker Host's Public IP Address (as before).
 
-You should see a page hosted on the nginx web server.
+You should see a page hosted on the nginx web server saying "Welcome to nginx!".
 
 <br>
 
-Exit the container and remove it.
+Stop the container and remove it...
 
-Push the container to your Azure Container Registry using:
+```
+docker ps
+```
 
+```
+docker stop <containerid>
+```
+
+```
+docker rm <containerid>
+```
+
+<br>
+
+The next thing to do is to push your new nginx image to your container registry.  You're already logged into your Azure Container Registry so it's as simple as:
+
+```
+docker push <containerregistryname>.azurecr.io/nginx
+```
+
+<br>
+
+Once the upload is finished, take a look at your container registry:
+
+```
+az acr repository list --name <containerregistryname> --output table
+```
+
+<br>
+
+The 'nginx' image shown can now be pulled down by any authenticated Docker Host.
+
+<br>
+
+To test this, remove your local image, view your local image repository, pull the image down from your Azure Container Registry, and then view your local image repository again:
+
+```
+docker images
+```
+
+```
+docker rmi <containerregistryname>.azurecr.io/nginx
+```
+
+```
+docker images
+```
+
+```
+docker pull <containerregistryname>.azurecr.io/nginx
+```
+
+```
+docker images
+```
+
+<br>
+
+
+END
