@@ -1,0 +1,15 @@
+C:\Users\jamesgr\Desktop\Backend-API\Backend-API\obj\Debug\netcoreapp2.1\Backend-API.csproj.CoreCompileInputs.cache
+C:\Users\jamesgr\Desktop\Backend-API\Backend-API\obj\Debug\netcoreapp2.1\Backend-API.AssemblyInfoInputs.cache
+C:\Users\jamesgr\Desktop\Backend-API\Backend-API\obj\Debug\netcoreapp2.1\Backend-API.AssemblyInfo.cs
+C:\Users\jamesgr\Desktop\Backend-API\Backend-API\bin\Debug\netcoreapp2.1\Backend-API.deps.json
+C:\Users\jamesgr\Desktop\Backend-API\Backend-API\bin\Debug\netcoreapp2.1\Backend-API.runtimeconfig.json
+C:\Users\jamesgr\Desktop\Backend-API\Backend-API\bin\Debug\netcoreapp2.1\Backend-API.runtimeconfig.dev.json
+C:\Users\jamesgr\Desktop\Backend-API\Backend-API\bin\Debug\netcoreapp2.1\Backend-API.dll
+C:\Users\jamesgr\Desktop\Backend-API\Backend-API\bin\Debug\netcoreapp2.1\Backend-API.pdb
+C:\Users\jamesgr\Desktop\Backend-API\Backend-API\obj\Debug\netcoreapp2.1\Backend-API.csprojAssemblyReference.cache
+C:\Users\jamesgr\Desktop\Backend-API\Backend-API\obj\Debug\netcoreapp2.1\Backend-API.RazorAssemblyInfo.cache
+C:\Users\jamesgr\Desktop\Backend-API\Backend-API\obj\Debug\netcoreapp2.1\Backend-API.RazorAssemblyInfo.cs
+C:\Users\jamesgr\Desktop\Backend-API\Backend-API\obj\Debug\netcoreapp2.1\UserSecretsAssemblyInfo.cs
+C:\Users\jamesgr\Desktop\Backend-API\Backend-API\obj\Debug\netcoreapp2.1\Backend-API.RazorTargetAssemblyInfo.cache
+C:\Users\jamesgr\Desktop\Backend-API\Backend-API\obj\Debug\netcoreapp2.1\Backend-API.dll
+C:\Users\jamesgr\Desktop\Backend-API\Backend-API\obj\Debug\netcoreapp2.1\Backend-API.pdb

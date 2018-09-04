@@ -432,7 +432,7 @@ Now, login to your Azure Container Registry by first getting your credentials:
 az acr credential show --name <containerregistryname>
 ```
 
-Followed by logging with Docker:
+Followed by logging in with Docker:
 
 ```
 docker login <containerregistryname>.azurecr.io --username <containerregistryname> --password <eitherpasswordshowninlastoutput>
@@ -462,11 +462,12 @@ You should see a page hosted on the nginx web server saying "Welcome to nginx!".
 
 <br>
 
-Stop the container and remove it...
+Stop the container and remove it:
 
 ```
 docker ps
 ```
+...
 
 ```
 docker stop <containerid>
